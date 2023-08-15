@@ -24,20 +24,18 @@ public class Triangle : IAreaCalculatable
     /// <returns> Площадь треугольника. </returns>
     public double Area()
     {
-        if (IsOrthogonal())
+        if (IsHypotenuse(_b, _c, _a))
         {
-            /* Можно было бы в проверке на прямоугольность сделать так, чтобы _c, например, всегда была гипотенузой,
-             но выглядит странно по отношению к пользователю. */
-            if (_a > _b && _a > _c)
-            {
-                return 0.5 * _b * _c;
-            }
+            return 0.5 * _b * _c;
+        }
 
-            if (_b > _a && _b > _c)
-            {
-                return 0.5 * _a * _c;
-            }
+        if (IsHypotenuse(_a, _c, _b))
+        {
+            return 0.5 * _a * _c;
+        }
 
+        if (IsHypotenuse(_a, _b, _c))
+        {
             return 0.5 * _a * _b;
         }
 
@@ -49,18 +47,22 @@ public class Triangle : IAreaCalculatable
     /// Проверяет треугольник на прямоугольность. 
     /// </summary>
     /// <returns> true, если прямоугольный. </returns>
-    public bool IsOrthogonal()
+    public bool IsRight()
     {
-        if (_a > _b && _a > _c && Math.Abs(_a * _a - (_b * _b + _c * _c)) < 1e-6)
-        {
-            return true;
-        }
+        return IsHypotenuse(_a, _b, _c) || IsHypotenuse(_a, _c, _b)
+                                        || IsHypotenuse(_b, _c, _a);
+    }
 
-        if (_b > _a && _b > _c && Math.Abs(_b * _b - (_a * _a + _c * _c)) < 1e-6)
-        {
-            return true;
-        }
-
-        return _c > _a && _c > _b && Math.Abs(_c * _c - (_a * _a + _b * _b)) < 1e-6;
+    /// <summary>
+    /// Проверяет, является ли последний параметр гипотенузой.
+    /// </summary>
+    /// <param name="leg1"> Предполагаемый катет. </param>
+    /// <param name="leg2"> Предполагаемый катет. </param>
+    /// <param name="hypotenuse"> Предполагаемая гипотенуза. </param>
+    /// <returns> Результат проверки последнего параметра. </returns>
+    private bool IsHypotenuse(double leg1, double leg2, double hypotenuse)
+    {
+        return hypotenuse > leg1 && hypotenuse > leg2 &&
+               Math.Abs(hypotenuse * hypotenuse - (leg1 * leg1 + leg2 * leg2)) < 1e-6;
     }
 }
